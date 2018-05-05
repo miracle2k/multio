@@ -9,7 +9,7 @@ __all__ = ['trio_open_connection', 'trio_send_all', 'trio_receive_some', 'trio_c
 
 
 # Wrapper functions.
-async def trio_open_connection(host, port, *, ssl=False, **kwargs):
+async def trio_open_connection(host, port, *, ssl=False, source_addr=None, **kwargs):
     '''
     Allows connections to be made that may or may not require ssl.
     Somewhat surprisingly trio doesn't have an abstraction for this like
@@ -24,9 +24,9 @@ async def trio_open_connection(host, port, *, ssl=False, **kwargs):
     '''
     import trio
     if not ssl:
-        sock = await trio.open_tcp_stream(host, port)
+        sock = await trio.open_tcp_stream(host, port, source_addr=source_addr)
     else:
-        sock = await trio.open_ssl_over_tcp_stream(host, port)
+        sock = await trio.open_ssl_over_tcp_stream(host, port, source_addr=source_addr)
         await sock.do_handshake()
 
     sock.close = sock.aclose
